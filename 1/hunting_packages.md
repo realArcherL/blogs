@@ -3,6 +3,7 @@
 ## Good Articles and starting point
 
 - Resources to follow: https://hackerone.com/nodejs-ecosystem/hacktivity (now discontinued, but good place to learn)
+- More latest vulns: https://security.snyk.io/vuln/npm
 
 1. [[pac-resolver] NPM package with 3 million weekly downloads had a severe vulnerability](https://httptoolkit.com/blog/npm-pac-proxy-agent-vulnerability/)
 2. [[gity] RCE via insecure command formatting](https://hackerone.com/reports/730111) Sadly the package no longer exists.
@@ -10,6 +11,7 @@
    - Task on this look for functions which are using exec `const {exec} = require('child_process');` something like this in the code, and not sanitizing the input.
 4. [[follow-redirects] Improper Input Validation > 1.15.4](https://security.snyk.io/vuln/SNYK-JS-FOLLOWREDIRECTS-6141137)
    - Task, check which packages are using these vuln(s) and find ways to exploit them
+5.
 
 ## Testing gained knowledge in the wild (or atleast was my original idea)
 
@@ -104,6 +106,9 @@ removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers)
 
 ## [Code Audit of wireguard-rest](https://www.npmjs.com/package/wireguard-rest)
 
+Weekly download: 0
+No Snyk advisory
+
 Sadly, this package was never updated and has [[wireguard-wrapper] One with command Injection via insecure command concatenation](https://hackerone.com/reports/858674) vulnerability and hence is susceptible to the same problem.
 
 [Loom video going over the POC](https://www.loom.com/share/a7048a719de54978b291f3c4bf7c047c). This would enable a direct remote code execution on the device running this package.
@@ -127,3 +132,85 @@ app.listen(1234, function () {
 How was this identified? Looked at the dependents of the original package, and then what version were using the vulnerable package (something which Snyk, and other packages automated)
 
 Didn't see a lot of packages using wireguard-rest, reported to the author irrespective.
+
+## [Code Audit of osenv](https://www.npmjs.com/package/wireguard-rest)
+
+Weekly download: 3M (even though deprecated)
+
+Code read showed that they also use `const {exec} = require('child_process');` in the memo function.
+
+```js
+// https://github.com/npm/osenv/blob/master/osenv.js#L11
+function memo(key, lookup, fallback) {
+  var fell = false
+  var falling = false
+  exports[key] = function (cb) {
+    var val = lookup()
+    if (!val && !fell && !falling && fallback) {
+      fell = true
+      falling = true
+      exec(fallback, function (er, output, stderr) {
+        falling = false
+        if (er) return // oh well, we tried
+        val = output.trim()
+      })
+    }
+    exports[key] = function (cb) {
+      if (cb) process.nextTick(cb.bind(null, null, val))
+      return val
+    }
+    if (cb && !falling) process.nextTick(cb.bind(null, null, val))
+    return val
+  }
+}
+```
+
+Luckily, `fallback` param value is something which is controlled by the code, and cannot be controlled by the user. Hence, this doesn't introduce any security issue.
+
+```js
+memo(
+  "user",
+  function () {
+    return isWindows
+      ? process.env.USERDOMAIN + "\\" + process.env.USERNAME
+      : process.env.USER
+  },
+  "whoami"
+)
+
+// whoami is the fall back command, if this could be controlled by the
+// user then something like this would have made it vulnerable:
+
+// Simulate user input
+const userInput = "touch hacked.txt" // Dangerous input
+
+// Create a memoized function
+memo("user_controlled_function", () => null, userInput)
+```
+
+This would execute the user command and we would have a RCE. SUCH IS NOT the case luckily :)
+
+## [Code Audit of @jmondi/url-to-png](https://www.npmjs.com/package/@jmondi/url-to-png)
+
+Weekly download: 5
+
+This package is old but very useful to hackers, if used correctly.
+Recently an issue was discovered in the package which [allowed users to read any file arbitrarily](https://github.com/jasonraimondi/url-to-png/issues/47).
+
+The [package has an `ALLOW_LIST`](https://jasonraimondi.github.io/url-to-png/config/#allow-list) where the host can define which services the user is allowed to take screenshots of. By default, it is allowed to take screenshots of services running on localhost or 127.0.0.1 or the IPv6 version of the webpage.
+
+I believe the package should also have a blacklist because of a possible vulnerability. If someone hosts this on a server, users can then take screenshots of the other web services running locally. (this all hinges on the fact that people can use this package to provide screenshot as a service)
+
+Made a comment on the official bug here: https://github.com/jasonraimondi/url-to-png/issues/47#issuecomment-2219577236 (now deleted)
+
+Submitted it as an advisory here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-342q-2mc2-5gmp. Even though author accepted it, this isn't a bug. Resolution can be blocked at network level. Added the ability for block list. More improvements can be made on it TBH.
+
+While working on it, however I found an almost path traversal bug. More on it here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-vvmv-wrvp-9gjr
+
+#### Too Challenging
+
+1. [pretty-error](https://security.snyk.io/package/npm/sanitize-html): has potential for vulns, is in constant development.
+
+### Potential Candidates
+
+1. [@jmondi/url-to-png](https://www.npmjs.com/package/@jmondi/url-to-png)
