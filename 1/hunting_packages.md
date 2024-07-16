@@ -204,9 +204,9 @@ I believe the package should also have a blacklist because of a possible vulnera
 
 Made a comment on the official bug here: https://github.com/jasonraimondi/url-to-png/issues/47#issuecomment-2219577236 (now deleted)
 
-Submitted it as an advisory here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-342q-2mc2-5gmp. Even though author accepted it, this isn't a bug. Resolution can be blocked at network level. Added the ability for block list. More improvements can be made on it TBH. CVE-2024-39919
+Submitted it as an advisory [here](https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-342q-2mc2-5gmp.). Even though author accepted it, this isn't a bug. Resolution can be blocked at network level. Added the ability for block list. More improvements can be made on it TBH. [CVE-2024-39919](https://nvd.nist.gov/vuln/detail/CVE-2024-39919)
 
-While working on it, however I found an almost path traversal bug. More on it here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-vvmv-wrvp-9gjr CVE-2024-39918
+While working on it, however I found an almost path traversal bug. More on it [here](https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-vvmv-wrvp-9gjr). [CVE-2024-39918](https://nvd.nist.gov/vuln/detail/CVE-2024-39918)
 
 #### Too Challenging
 
