@@ -131,7 +131,7 @@ app.listen(1234, function () {
 
 How was this identified? Looked at the dependents of the original package, and then what version were using the vulnerable package (something which Snyk, and other packages automated)
 
-Didn't see a lot of packages using wireguard-rest, reported to the author irrespective.
+Didn't see a lot of packages using wireguard-rest, reported to the author irrespective. and requested a CVE from Snyk. GIST: https://gist.github.com/realArcherL/d2a2610c93bef820ddb68198fd48fd4f
 
 ## [Code Audit of osenv](https://www.npmjs.com/package/wireguard-rest)
 
@@ -203,9 +203,9 @@ I believe the package should also have a blacklist because of a possible vulnera
 
 Made a comment on the official bug here: https://github.com/jasonraimondi/url-to-png/issues/47#issuecomment-2219577236 (now deleted)
 
-Submitted it as an advisory here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-342q-2mc2-5gmp. Even though author accepted it, this isn't a bug. Resolution can be blocked at network level. Added the ability for block list. More improvements can be made on it TBH.
+Submitted it as an advisory here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-342q-2mc2-5gmp. Even though author accepted it, this isn't a bug. Resolution can be blocked at network level. Added the ability for block list. More improvements can be made on it TBH. CVE-2024-39919
 
-While working on it, however I found an almost path traversal bug. More on it here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-vvmv-wrvp-9gjr
+While working on it, however I found an almost path traversal bug. More on it here: https://github.com/jasonraimondi/url-to-png/security/advisories/GHSA-vvmv-wrvp-9gjr CVE-2024-39918
 
 #### Too Challenging
 
