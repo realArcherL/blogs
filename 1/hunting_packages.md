@@ -4,6 +4,7 @@
 
 - Resources to follow: https://hackerone.com/nodejs-ecosystem/hacktivity (now discontinued, but good place to learn)
 - More latest vulns: https://security.snyk.io/vuln/npm
+- [Tweets on latest CVEs](https://twitter.com/CVEnew)
 
 1. [[pac-resolver] NPM package with 3 million weekly downloads had a severe vulnerability](https://httptoolkit.com/blog/npm-pac-proxy-agent-vulnerability/)
 2. [[gity] RCE via insecure command formatting](https://hackerone.com/reports/730111) Sadly the package no longer exists.
